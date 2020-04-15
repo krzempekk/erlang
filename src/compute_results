@@ -1,0 +1,6 @@
+Procesor Intel® Core™ i7-5500U CPU @ 2.40GHz × 4
+Obliczenia dla 100 ludzi i 100000 paczkomatów
+Wyniki:
+computeSequential time: 2194.576ms
+computeParallel time: 2487.019ms
+computeMixed time: 1302.112ms

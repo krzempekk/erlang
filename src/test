@@ -1,0 +1,25 @@
+M = lab2_pollution:createMonitor().
+M1 = lab2_pollution:addStation("S1", {1,1}, M).
+M2 = lab2_pollution:addStation("S2", {2,2}, M1).
+M3 = lab2_pollution:addValue("S1", {{2020,12,1},{10,0,0}}, "PM10", 10, M2).
+M4 = lab2_pollution:addValue({2,2}, {{2020,12,1},{20,0,0}}, "PM10", 20, M3).
+M5 = lab2_pollution:addValue({1,2}, {{2020,12,2},{10,0,0}}, "PM10", 30, M4).
+M6 = lab2_pollution:addValue({2,2}, {{2020,12,3},{10,0,0}}, "PM10", 15, M4).
+M7 = lab2_pollution:addValue("S2", {{2020,12,3},{10,0,0}}, "PM2.5", 5, M6).
+M8 = lab2_pollution:addValue("S1", {{2020,12,3},{10,0,0}}, "PM2.5", 15, M7).
+M9 = lab2_pollution:removeValue({1,1}, {{2020,12,3},{10,0,0}}, "PM2.5", M8).
+M10 = lab2_pollution:addValue({2,2}, {{2020,12,1},{15,0,0}}, "PM10", 40, M9).
+lab2_pollution:getOneValue({2,2},{{2020,12,3},{10,0,0}},"PM10",M9).
+%% spodziewany wynik - 15
+lab2_pollution:getStationMean("S2","PM10",M9).
+%% spodziewany wynik - 17.5
+lab2_pollution:getDailyMean({2020,12,1},"PM10",M9).
+%% spodziewany wynik - 15
+lab2_pollution:getDailyMean({2020,12,12},"PM10",M9).
+%% spodziewany wynik - {error,no_matching_values}
+lab2_pollution:getDailyMaxValue({2020,12,1},"PM10", M10).
+%% spodziewany wynik - {{2,2},40}
+lab2_pollution:getDailyValueCount({2020,12,1},"PM10", M10).
+%% spodziewany wynik - 3
+
+%% Test buduje najpierw bazę 2 stacji i 6 wpisów. Wśród wpisów dodających pomiary jest jeden błędny - próba dodania pomiaru do nieistniejącej stacji, kończy się on błędem. Jeden z pomiarów jest usuwany. Następnie testowane są funkcje operujące na danych.
