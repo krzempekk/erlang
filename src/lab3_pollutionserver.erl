@@ -12,7 +12,7 @@
 %%-import(lab2_pollution, [createMonitor/0, addValue/5, addStation/3, removeValue/4, getDailyValueCount/3, getStationMean/3, getDailyMean/3, getOneValue/4, getDailyMaxValue/3]).
 
 %% API
--export([start/0, stop/0, init/0, loop/1, getMonitor/0, addStation/2, addValue/4, removeValue/3, getOneValue/3, getStationMean/2, getDailyMean/2, getDailyMaxValue/2, getDailyValueCount/2]).
+-export([start/0, stop/0, init/0, getMonitor/0, addStation/2, addValue/4, removeValue/3, getOneValue/3, getStationMean/2, getDailyMean/2, getDailyMaxValue/2, getDailyValueCount/2]).
 
 start() ->
   register(parent, self()),
@@ -32,7 +32,7 @@ loop(Monitor) ->
         { error, Msg } -> parent ! { error, Msg }, loop(Monitor);
         _ -> parent ! ok, loop(NewMonitor)
       end;
-    { Function, Args}
+    { Function, Args }
       when (Function == getDailyValueCount) or (Function == getStationMean) or (Function == getDailyMean) or (Function == getOneValue) or (Function == getDailyMaxValue) ->
       ReturnVal = apply(lab2_pollution, Function, Args ++ [Monitor]),
       case ReturnVal of
