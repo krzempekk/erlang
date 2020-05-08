@@ -1,0 +1,4 @@
+stations upload: 0.0185, streams: 0.1476
+values upload: 0.1017, streams: 0.1228
+getStationMean: 73.75, time: 0.0016
+getDailyMean: 66.69, time: 0.0033

@@ -52,7 +52,7 @@ addValue(StationInfo, Date, Type, Value, Monitor) ->
     _ -> {error, station_dont_exist}
   end.
 
-%% removeValue - działanie funkcji zgodne z instrukcją do labolatoriów
+%% removeValue - działanie funkcji zgodne z instrukcją do labolatoriów. Funkcja usuwa dany pomiar jeśli istnieje.
 
 removeValue(StationInfo, Date, Type, Monitor) ->
   Stations = Monitor#monitor.stations,

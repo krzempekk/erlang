@@ -36,27 +36,40 @@ handle_call({getDailyMaxValue, Date, Type}, _From, State) ->
   {reply, pollution:getDailyMaxValue(Date, Type, State), State};
 
 handle_call({getDailyValueCount, Date, Type}, _From, State) ->
-  {reply, pollution:getDailyValueCount(Date, Type, State), State}.
+  {reply, pollution:getDailyValueCount(Date, Type, State), State};
+
+% W przypadku błędu związanego ze stanem bazy (np. taka stacja już istnieje), zachowujemy poprzedni stan i zwracamy userowi błąd. Funkcje modyfikujące bazę zostały zrealizowane jako calle, aby klient dostał informację o powodzeniu (wtedy atom ok) lub błędzie (wtedy krotka błędu która została zwrócona z funkcji modułu pollution)
+
+handle_call({addStation, Name, Coords}, _From, State) ->
+  NewState = pollution:addStation(Name, Coords, State),
+  case NewState of
+    {error, _} -> {reply, NewState, State};
+    _ -> {reply, ok, NewState}
+  end;
+
+handle_call({addValue, StationInfo, Date, Type, Value}, _From, State) ->
+  NewState = pollution:addValue(StationInfo, Date, Type, Value, State),
+  case NewState of
+    {error, _} -> {reply, NewState, State};
+    _ -> {reply, ok, NewState}
+  end;
+
+handle_call({removeValue, StationInfo, Date, Type}, _From, State) ->
+  NewState = pollution:removeValue(StationInfo, Date, Type, State),
+  case NewState of
+    {error, _} -> {reply, NewState, State};
+    _ -> {reply, ok, NewState}
+  end.
 
 
-handle_cast(crash, State) ->
-  exit("Error");
-
-handle_cast({addStation, Name, Coords}, State) ->
-  {noreply, pollution:addStation(Name, Coords, State)};
-
-handle_cast({addValue, StationInfo, Date, Type, Value}, State) ->
-  {noreply, pollution:addValue(StationInfo, Date, Type, Value, State)};
-
-handle_cast({removeValue, StationInfo, Date, Type}, State) ->
-  {noreply, pollution:removeValue(StationInfo, Date, Type, State)}.
+handle_cast(crash, _State) ->
+  exit("Error").
 
 
 handle_info(_Info, State) -> {noreply, State}.
 
 
 terminate(_Reason, _State) -> ok.
-
 
 code_change(_OldVsn, State, _Extra) -> {ok, State}.
 
@@ -71,13 +84,13 @@ stop() -> gen_server:call(?MODULE, terminate).
 crash() -> gen_server:cast(?MODULE, crash).
 
 addStation(Name, Coords) ->
-  gen_server:cast(?MODULE, {addStation, Name, Coords}).
+  gen_server:call(?MODULE, {addStation, Name, Coords}).
 
 addValue(StationInfo, Date, Type, Value) ->
-  gen_server:cast(?MODULE, {addValue, StationInfo, Date, Type, Value}).
+  gen_server:call(?MODULE, {addValue, StationInfo, Date, Type, Value}).
 
 removeValue(StationInfo, Date, Type) ->
-  gen_server:cast(?MODULE, {removeValue, StationInfo, Date, Type}).
+  gen_server:call(?MODULE, {removeValue, StationInfo, Date, Type}).
 
 getOneValue(StationInfo, Date, Type) ->
   gen_server:call(?MODULE, {getOneValue, StationInfo, Date, Type}).

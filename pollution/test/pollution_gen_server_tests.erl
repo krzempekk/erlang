@@ -21,7 +21,9 @@ stopServer(_) -> stop().
 
 runTests(_) -> [
   ?_assertEqual(ok, addStation("S1", {1,1})),
+  ?_assertMatch({error, _}, addStation("S2", {1,1})),
   ?_assertEqual(ok, addValue("S1", {{2020,12,1},{10,0,0}}, "PM10", 10)),
+  ?_assertMatch({error, _}, addValue("S1", {{2020,12,1},{10,0,0}}, "PM10", 20)),
   ?_assertEqual(10, getOneValue("S1", {{2020,12,1},{10,0,0}}, "PM10")),
   ?_assertMatch({error, _}, getOneValue("S123", {{2020,12,1},{10,0,0}}, "PM10")),
   ?_assert(10 == getStationMean("S1", "PM10")),
@@ -32,7 +34,8 @@ runTests(_) -> [
   ?_assertMatch({error, _}, getDailyMaxValue({2020, 12, 1}, "PM123")),
   ?_assertEqual(1, getDailyValueCount({2020, 12, 1}, "PM10")),
   ?_assertMatch(0, getDailyValueCount({2020, 12, 1}, "PM123")),
-  ?_assertEqual(ok, removeValue("S1", {{2020,12,1},{10,0,0}}, "PM10"))
+  ?_assertEqual(ok, removeValue("S1", {{2020,12,1},{10,0,0}}, "PM10")),
+  ?_assertMatch(ok, removeValue("S1", {{2020,12,1},{10,0,0}}, "PM5"))
 ].
 
 functions_test_() ->
